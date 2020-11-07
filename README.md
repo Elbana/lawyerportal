@@ -1,2 +1,2 @@
 # lawyerportal
-Develop a web-based application for citizens and lawyers.
+Web-based application for citizens and lawyers.
