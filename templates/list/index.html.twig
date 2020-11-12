@@ -1,0 +1,182 @@
+{# templates/list/index.html.twig #} {% extends 'base.html.twig' %} {% block
+    body %}
+    <div class="container">
+        <button type="button" data-toggle="modal" data-target="#add-modal" class="btn btn-light add-btn">Add new appointment</button>
+        <hr>
+        <div class="row">
+            <div class="panel panel-info filterable">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Manage appointment requests</h3>
+                </div>
+                <table class="table">
+                    <thead>
+                    <tr class="filters">
+                        <th><input type="text" class="form-control" placeholder="#Appointment Id"></th>
+                        <th><input type="text" class="form-control" placeholder="Citizen Name"></th>
+                        <th><input type="text" class="form-control" placeholder="Lawyer Name"></th>
+                        <th><input type="text" class="form-control" placeholder="Status"></th>
+                        <th><input type="text" class="form-control" placeholder="Requested Time"></th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.id }}</td>
+                        <td>{{ appointment.citizen.name }}</td>
+                        <td>{{ appointment.lawyer.name }}</td>
+
+                        {% if appointment.status == 2 %}
+                            <td>
+                                <p class="text-success">
+                                    Approved
+                                </p>
+                            </td>
+
+                        {% elseif appointment.status == 3 %}
+                            <td>
+                                <p class="text-danger">
+                                    Rejected
+                                </p>
+                            </td>
+                        {% else %}
+                            <td>
+                                <p class="text-warning">
+                                    Pending
+                                </p>
+                            </td>
+                        {% endif %}
+                        <td>{{ appointment.requestTime.format('Y-m-d H:m:i') }}</td>
+                        <td>
+                            <a href="#" class="approve" title="approve" data-href="edit?id={{ appointment.id }}&action=approve" data-toggle="modal" data-target="#approve-modal"><i class="material-icons">&#xe5ca;</i></a>
+                            <a href="#" class="delete" title="Delete" data-href="edit?id={{ appointment.id }}&action=reject" data-toggle="modal" data-target="#reject-modal"><i class="material-icons">&#xe5cd;</i></a>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                    <hr>
+
+                    </tbody>
+                </table>
+                <hr>
+                <div class="clearfix">
+                    <ul class="pagination">
+                        {% if maxPages > 1 %}
+                            <ul class="pagination pagination-sm">
+                                {# `«` arrow  #}
+                                <li {{ thisPage == 1 ? 'class="disabled"' }}>
+                                    <a href="{{ path('appointment/list', {page: thisPage-1 < 1 ? 1 : thisPage-1}) }}">«</a>
+                                </li>
+
+                                {# Render each page number #}
+                                {% for i in 1..maxPages %}
+                                    <li {{ thisPage == i ? 'class="active"' }}>
+                                        <a href="{{ path('appointment/list', {page: i}) }}">{{ i }}</a>
+                                    </li>
+                                {% endfor %}
+
+                                {# `»` arrow #}
+                                <li {{ thisPage == maxPages ? 'class="disabled"' }}>
+                                    <a href="{{ path('appointment/list', {page: thisPage+1 <= maxPages ? thisPage+1 : thisPage}) }}">»</a>
+                                </li>
+                            </ul>
+                        {% endif %}                    </ul>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <form id="add-modal-form">
+    <div id="add-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>Appointment request</h3>
+                    <div class="alert alert-success" role="alert" style="display: none;"></div>
+                    <div class="alert alert-danger" role="alert" style="display: none;"></div>
+
+                </div>
+                <form id="contactForm" name="contact" role="form">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="lawyer">Lawyer</label>
+                            <select id="lawyer" name="lawyer" class="form-control dropdown-toggle">
+                                {% for lawyer in lawyers %}
+                                    <option value="{{ lawyer.id }}">{{ lawyer.name }}
+                                 {% endfor %}
+                            </select>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="citizen">Citizen</label>
+                            <select id="citizen" name="citizen" class="form-control dropdown-toggle">
+                                {% for citizen in citizens %}
+                                <option value="{{ citizen.id }}">{{ citizen.name }}
+                                    {% endfor %}
+                            </select>
+                        </div>
+                        <div class='col-lg-15'>
+                            <div class="form-group">
+                                <label for="requestTime">request time</label>
+                                <div class='col-sm-5 input-group date' id='dtpickerdemo'>
+
+                                     <input type="text" id="requestTime" name="requestTime" required="required" class="form-control">
+                                    <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-success" id="submit">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </form>
+
+    <div class="modal fade" id="approve-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p>Approve appointment</p>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to approve this request?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-success btn-ok">Approve</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="reject-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Reject appointment
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to reject this request?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Reject</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="{{ asset('css/list.css') }}" />
+    <script type="text/javascript" src="{{ asset('js/list.js') }}"></script>
+
+{% endblock %}
