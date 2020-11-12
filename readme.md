@@ -3,6 +3,11 @@
 Lawyer portal is a simple example for appointment booking system
 ## Installation
 
+Run composer install in the main dirctory
+```bash
+composer install
+```
+
 Update database credentials inside LawyerPortal/.env
 
 Run this command to create the database
